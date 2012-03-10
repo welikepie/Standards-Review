@@ -1,0 +1,32 @@
+W3C DISCUSSION BOARD
+------------------------------------
+The site discussed is where the different solutions to issues raised by W3C are posted.
+The site is supposed to act as the replacement for the mailing list format used by W3C
+currently.
+
+* The site will hold the problems proposed
+  * Problems can be browsed [most recent sorting for now]
+  * Problems have states [crowd suggested, W3C proposed, accepted, rejected, frozen/pending review]
+  * Problems can be added by anyone [title, "owner" with link, references with links, demo link, description]
+  * Problems can be edited by anyone [title, "owner" with link, references with links, demo link, description]
+  * States can be changed by anyone
+  * Problems can be expanded to show all their solutions
+* Each solution will be linked with the problem
+  * Solutions can be browsed [most recent sorting]
+  * Solutions have states as well [open, accepted, rejected]
+  * Solutions can be added by anyone [title, "owner" with link, references with links, demo link, description]
+  * Solutions can be edited by anyone [title, "owner" with link, references with links, demo link, description]
+  * States of solutions can be changed by anyone
+  * Solutions can be upvoted (but not downvoted)
+  * Solutions can be expanded to show the discussion thread (Disqus)
+* System keeps track of the users via the Twitter's OAuth system
+* Edits on problems and solutions will be tracked by revision
+  * Each revision is tied to the particular Twitter user
+  * Blacklisting allows to specify the Twitter users without ability to edit
+* Descriptions will use Markdown for formatting
+  * Markdown is rendered server-side, but the actual markdown content is provided as well
+  * Editing will transparently turn the content area into form, prepopulated with Markdown
+  * After editing, new content is AJAX-ed back to the server, whereas website generates HTML client-side
+* Four-column layout to be used on standard size screens. Three columns for content, one for nav and about
+  * Decrease the number of columns as screen gets smaller, move the navigation to the top (column span)
+  * If the demo is on JSFiddle, embed it, otherwise provide a big button pointing to it

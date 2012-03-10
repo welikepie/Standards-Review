@@ -1,0 +1,26 @@
+* Design the database structure
+* Insert example data into the database
+* Code the display procedures
+  * Code the list of problems
+  * Code the display of single problem
+  * Code the display of single solution
+    * Add AJAX for display of single solution
+	* Add History API handling for AJAX display
+  * Add the Markdown on both server-side and client-side
+    * Add comm of original Markdown along with render
+	* Add JSFiddle (and similar) embedding
+  * Add the Disqus support to single solution display
+* Add the Twitter OAuth authentication
+  * Add the blacklisting functionality
+* Code the addition procedures
+  * Ensure the revision tracking
+  * Form for adding problems
+  * Form for adding solutions
+  * Link with blacklisting
+* Code the modification procedures
+  * Ensure the revision tracking
+  * Modify the content and/or state
+  * Link with blacklisting
+  * Add the AJAX capabilities
+* Add upvoting capabilities to solutions
+  * Track upvotes to ensure one upvote per user and solution
