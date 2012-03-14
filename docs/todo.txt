@@ -1,5 +1,5 @@
-* Design the database structure
-* Insert example data into the database
+* **[DONE]** Design the database structure
+* **[DONE]** Insert example data into the database
 * Code the display procedures
   * Code the list of problems
   * Code the display of single problem

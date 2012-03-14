@@ -1,0 +1,84 @@
+-- EXAMPLE DATABASE DATA
+-- ************************************
+
+INSERT INTO users (twitter_id) VALUES
+(69574586), -- D1SoveR
+(5738612);  -- arranrp
+
+INSERT INTO issues (author) VALUES (1);
+INSERT INTO issue_revisions (
+    issue_id,
+    revisionist,
+    state,
+    title,
+    description
+) VALUES (
+    1,
+    1,
+    1,
+    'Angles and JS: Degrees or radians?',
+    'What is with the angles in JavaScript and other languages? Argument specified here. Something interesting about angles.
+
+Radians
+-------
+
+1. Used in mathematical operations.
+2. Pi is awesome.
+3. I like trains.
+
+Degrees
+-------
+
+1. Easier to read.
+2. Not using pi.
+3. Cabbage.'
+);
+INSERT INTO issue_references (
+    revision_id,
+    name,
+    reference
+) VALUES
+( 1, 'jQuery-Rotate', 'http://code.google.com/p/jquery-rotate/' ),
+( 1, 'Radians', 'http://en.wikipedia.org/wiki/Radian' ),
+( 1, '__demo__', 'http://jsfiddle.net/D1SoveR/3TsEx/' );
+
+INSERT INTO solutions (issue_id, author) VALUES (1, 2);
+INSERT INTO solution_revisions (
+    solution_id,
+    revisionist,
+    state,
+    title,
+    description
+) VALUES (
+    1,
+    2,
+    1,
+    'Radians FTW',
+    'We should use radians for everything angle-related.'
+);
+
+INSERT INTO solutions (issue_id, author) VALUES (1, 1);
+INSERT INTO solution_revisions (
+    solution_id,
+    revisionist,
+    revised,
+    state,
+    title,
+    description
+) VALUES
+(
+    1,
+    1,
+    DATE_SUB(NOW(), INTERVAL 1 DAY),
+    1,
+    'Degrees for everything',
+    'Degrees are much more pleasing than radians, we should use them.'
+),
+(
+    1,
+    1,
+    NOW(),
+    1,
+    'Degrees for everything',
+    'Degrees are much more pleasing than radians, we should use them. Pi sucks ass.'
+);

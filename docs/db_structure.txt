@@ -1,0 +1,94 @@
+-- DATABASE STRUCTURES:
+-- ************************************
+
+CREATE TABLE `users` (
+  `user_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `twitter_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(60) NOT NULL,
+  `blacklisted` BIT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `unique_twitter` USING BTREE (`twitter_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
+
+CREATE TABLE `states` (
+  `state_id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(40) NOT NULL,
+  PRIMARY KEY  (`state_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+INSERT INTO `states` (`state_id`, `name`) SELECT * FROM (
+	SELECT 1, 'Suggested' UNION ALL
+	SELECT 2, 'Official' UNION ALL -- W3C Proposals and so on
+	SELECT 3, 'Accepted' UNION ALL -- If solution has been accepted officially
+	SELECT 4, 'Rejected' UNION ALL -- If solution has been rejected officially
+	SELECT 5, 'Pending Review'     -- If solution has been taken by W3C for internal discussion
+) AS temp;
+
+CREATE TABLE `issues` (
+  `issue_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `author` INT UNSIGNED NOT NULL,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`issue_id`),
+  FOREIGN KEY `author_link` (`author`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
+
+CREATE TABLE `issue_revisions` (
+  `revision_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `issue_id` INT UNSIGNED NOT NULL,
+  `revisionist` INT UNSIGNED NOT NULL,
+  `revised` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `state` TINYINT UNSIGNED NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `source` VARCHAR(255) NULL,
+  `description` TEXT NULL,
+  PRIMARY KEY  (`revision_id`),
+  KEY `latest_revision` USING BTREE (`issue_id`,`revised`),
+  FOREIGN KEY `issue_link` (`issue_id`) REFERENCES `issues` (`issue_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY `state_link` (`state`) REFERENCES `states` (`state_id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  FOREIGN KEY `revisionist_link` (`revisionist`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+CREATE TABLE `issue_references` (
+  `reference_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `revision_id` INT UNSIGNED NOT NULL,
+  `name` VARCHAR(40) NOT NULL,
+  `reference` VARCHAR(255) NOT NULL,
+  PRIMARY KEY  (`reference_id`),
+  FOREIGN KEY `revision_link` (`revision_id`) REFERENCES `issue_revisions` (`revision_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+CREATE TABLE `solutions` (
+  `solution_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `issue_id` INT UNSIGNED NOT NULL,
+  `author` INT UNSIGNED NOT NULL,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `upvotes` INT UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY  (`solution_id`),
+  FOREIGN KEY `issue_link` (`issue_id`) REFERENCES `issues` (`issue_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY `author_link` (`author`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
+
+CREATE TABLE `solution_revisions` (
+  `revision_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `solution_id` INT UNSIGNED NOT NULL,
+  `revisionist` INT UNSIGNED NOT NULL,
+  `revised` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `state` TINYINT UNSIGNED NULL,
+  `title` VARCHAR(255) NULL,
+  `source` VARCHAR(255) NULL,
+  `description` TEXT NULL,
+  PRIMARY KEY  (`revision_id`),
+  KEY `latest_revision` USING BTREE (`solution_id`,`revised`),
+  FOREIGN KEY `solution_link` (`solution_id`) REFERENCES `solutions` (`solution_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY `state_link` (`state`) REFERENCES `states` (`state_id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  FOREIGN KEY `revisionist_link` (`revisionist`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+CREATE TABLE `solution_references` (
+  `reference_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `revision_id` INT UNSIGNED NOT NULL,
+  `name` VARCHAR(40) NOT NULL,
+  `reference` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`reference_id`),
+  FOREIGN KEY `revision_link` (`revision_id`) REFERENCES `solution_revisions` (`revision_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
