@@ -9,7 +9,7 @@
 		public $displayName = 'solution_id';
 		
 		public $belongsTo = array(
-			'User' => array(
+			'Author' => array(
 				'className' => 'User',
 				'foreignKey' => 'author'
 			),

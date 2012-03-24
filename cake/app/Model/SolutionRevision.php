@@ -9,7 +9,7 @@
 		public $displayName = 'title';
 		
 		public $belongsTo = array(
-			'User' => array(
+			'Revisionist' => array(
 				'className' => 'User',
 				'foreignKey' => 'revisionist'
 			),
@@ -19,13 +19,14 @@
 			),
 			'State' => array(
 				'className' => 'State',
-				'foreignKey' => 'state_id'
+				'foreignKey' => 'state'
 			)
 		);
 		public $hasMany = array(
-			'IssueReference' => array(
+			'SolutionReference' => array(
 				'className' => 'SolutionReference',
 				'foreignKey' => 'revision_id',
+				'order' => array('SolutionReference.name' => 'ASC'),
 				'dependent' => true
 			)
 		);

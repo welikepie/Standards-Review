@@ -9,7 +9,7 @@
 		public $displayName = 'issue_id';
 		
 		public $belongsTo = array(
-			'User' => array(
+			'Author' => array(
 				'className' => 'User',
 				'foreignKey' => 'author'
 			)
@@ -23,7 +23,8 @@
 			),
 			'Solution' => array(
 				'className' => 'Solution',
-				'foreignKey' => 'issue_id'
+				'foreignKey' => 'issue_id',
+				'order' => array('Solution.created' => 'DESC')
 			)
 		);
 	

@@ -1,14 +1,14 @@
 * **[DONE]** Design the database structure
 * **[DONE]** Insert example data into the database
-* Code the display procedures
-  * Code the list of problems
-  * Code the display of single problem
-  * Code the display of single solution
-    * Add AJAX for display of single solution
-	* Add History API handling for AJAX display
+* **[DONE]** Code the display procedures
+  * **[DONE]** Code the list of problems
+  * **[DONE]** Code the display of single problem
+  * **[DONE]** Code the display of single solution
+    * **[DONE]** Add AJAX for display of single solution
+    * **[DONE]** Add History API handling for AJAX display
   * Add the Markdown on both server-side and client-side
     * Add comm of original Markdown along with render
-	* Add JSFiddle (and similar) embedding
+      * Add JSFiddle (and similar) embedding
   * Add the Disqus support to single solution display
 * Add the Twitter OAuth authentication
   * Add the blacklisting functionality
