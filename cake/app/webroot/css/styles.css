@@ -1,0 +1,56 @@
+body {
+	width: 1000px;
+	margin: 0 auto;
+}
+body > * {
+	width: 800px;
+	padding: 20px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	background-color: #F5F5F5;
+}
+
+/* LOGO */
+hgroup#logo h1 {
+	font-size: 60px;
+	line-height: 1.2;
+	font-style: italic;
+	font-weight: bold;
+}
+hgroup#logo h2 {
+	color: #666;
+	font-size: 24px;
+	margin: -10px 0 10px 40px;
+}
+
+/* NAVIGATION */
+header#top nav {
+	border-top: 1px solid white;
+	border-bottom: 1px solid white;
+	overflow: hidden;
+}
+header#top nav a {
+	display: block;
+	float: left;
+	margin: 4px 0;
+	padding: 0 16px;
+	
+	color: #333;
+	text-decoration: none;
+}
+header#top nav a:hover {
+	text-decoration: underline;
+}
+header#top nav a ~ a {
+	border-left: 1px solid white;
+}
+
+/* SIDEBAR */
+aside#sidebar {
+	float: right;
+	max-width: 180px;
+}
+
+/* FOOTER */
+footer#bottom { text-align: right; }
+footer#bottom img { float: left; }

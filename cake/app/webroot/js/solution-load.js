@@ -14,12 +14,20 @@ if ((typeof window.history.pushState !== "undefined") && (window.history.pushSta
 		var path_match = /issues\/[0-9]+\/solutions\/[0-9]+/;
 		
 		var switching = function(data) {
-			var replaced = $(display_selector).filter(":first");
-			replaced.fadeOut(500, function() {
-				var temp = $(this);
-				$(data).hide().insertAfter(temp).fadeIn(500);
-				temp.remove();
+		
+			var deleted = $(display_selector).filter(":first");
+			for (var i = 0; i < pre_hooks.length; i++) { pre_hooks[i](deleted.get(0)); }
+			
+			deleted.fadeOut(300, function() {
+				var el = $(data).get(0);
+				$(el).insertAfter(deleted).fadeIn(300, function() {
+					console.log("Element: ", this);
+					console.log("Post-hooks: ", post_hooks);
+					for (var i = 0; i < post_hooks.length; i++) { post_hooks[i](this); }
+				});
+				deleted.remove();
 			});
+		
 		};
 		
 		var init = function(pre, post, link_select, display_select, path) {
@@ -31,9 +39,10 @@ if ((typeof window.history.pushState !== "undefined") && (window.history.pushSta
 			if (path) { path_match = path; }
 			
 			// Replace the current history state
-			var stateHtml = $(selector).filter(":first");
+			var stateHtml = $(display_selector).filter(":first");
 			stateHtml.wrap("<div></div>");
 			var state = $(stateHtml.get(0).parentNode).html();
+			console.log("Current state: ", state);
 			stateHtml.unwrap();
 			window.history.replaceState(state, null, window.location.href);
 			
@@ -45,15 +54,14 @@ if ((typeof window.history.pushState !== "undefined") && (window.history.pushSta
 					
 					// Verify if the URL is different from current one
 					if (this.href !== location.href) {
+						var that = this;
 						$.ajax({
 							url: this.href,
 							dataType: 'html',
 							type: 'GET',
 							success: function(data) {
-							
-								history.pushState(data, null, this.href);
+								history.pushState(data, null, that.href);
 								switching(data);
-							
 							}
 						});
 					}
@@ -61,13 +69,20 @@ if ((typeof window.history.pushState !== "undefined") && (window.history.pushSta
 				}
 			
 			});
+			
+			$(window).bind("popstate", function(ev) {
+				console.log("Event: ", ev);
+				switching(ev.originalEvent.state);
+			});
 		
 		};
+		
+		return init;
 	
 	})();
 
 }
-function solution_ajax() {
+/*function solution_ajax() {
 
 	var links = $("a")
 		.filter(function() { return this.href.match(/issues\/[0-9]+\/solutions\/[0-9]+/i); });
@@ -84,18 +99,27 @@ function solution_ajax() {
 				'success': function(data) {
 					$("div#solution").fadeOut(500, function() {
 						var temp = this;
-						$(data).hide().insertAfter(temp).fadeIn(500, function() { $(temp).remove(); });
+						$(data).hide().insertAfter(temp).fadeIn(500, function() {
+							$(temp).remove();
+							alert("Does it work?");
+							if (typeof DISQUS !== "undefined") {
+							
+								DISQUS.reset({
+								  reload: true,
+								  config: function () {  
+									this.page.identifier = "newidentifier";  
+									this.page.url = window.location.href;
+								  }
+								});
+							
+							}
+						});
 					});
 				}
 			
 			});
 		});
 	
-/*function(ev) {
-		console.log("Element: ", this);
-		console.log("Href: ", this.href);
-		
-	}*/
 	});
 	
-};
+};*/

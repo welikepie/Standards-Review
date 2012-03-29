@@ -8,8 +8,8 @@
     * **[DONE]** Add History API handling for AJAX display
   * Add the Markdown on both server-side and client-side
     * Add comm of original Markdown along with render
-      * Add JSFiddle (and similar) embedding
-  * Add the Disqus support to single solution display
+      * **[DONE]** Add JSFiddle (and similar) embedding
+  * **[DONE]** Add the Disqus support to single solution display
 * Add the Twitter OAuth authentication
   * Add the blacklisting functionality
 * Code the addition procedures
