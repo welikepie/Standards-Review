@@ -10,7 +10,7 @@
     * Add comm of original Markdown along with render
       * **[DONE]** Add JSFiddle (and similar) embedding
   * **[DONE]** Add the Disqus support to single solution display
-* Add the Twitter OAuth authentication
+* **[DONE]** Add the Twitter OAuth authentication
   * Add the blacklisting functionality
 * Code the addition procedures
   * Ensure the revision tracking

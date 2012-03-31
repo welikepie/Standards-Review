@@ -44,6 +44,16 @@
 			<nav>
 				<?php echo($this->Html->link("Browse Issues", "/issues", array("rel" => "search"))); ?>
 				<?php echo($this->Html->link("About Us", "/about", array("rel" => "author"))); ?>
+				
+				<?php if ($this->Session->check("loggedIn")) {
+					?><p class="tab">Welcome, <?php echo($this->Session->read("loggedIn.name")); ?>!</p><?php
+				} else {
+					echo($this->Html->link(
+						$this->Html->image("http://si0.twimg.com/images/dev/buttons/sign-in-with-twitter-d.png"),
+						"/twitter",
+						array("escape" => false, "class" => "tab")
+					));
+				} ?>
 			</nav>
 		</header>
 		

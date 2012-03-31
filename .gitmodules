@@ -1,3 +1,3 @@
-[submodule "backend/tmhOAuth"]
-	path = backend/tmhOAuth
+[submodule "cake/app/Vendor/tmhOAuth"]
+	path = cake/app/Vendor/tmhOAuth
 	url = git://github.com/themattharris/tmhOAuth.git
