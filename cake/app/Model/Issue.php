@@ -3,6 +3,7 @@
 	class Issue extends AppModel {
 	
 		public $name = 'Issue';
+		public $actsAs = array('Containable');
 		
 		public $useTable = 'issues';
 		public $primaryKey = 'issue_id';

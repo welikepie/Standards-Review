@@ -13,7 +13,7 @@
 		
 		$this->Html->script(array(
 			'jquery-1.7.2.min',
-			'solution-load',
+			'scripts',
 			'http://standardsreview.disqus.com/embed.js'
 		), array(
 			'inline' => false,
@@ -22,7 +22,7 @@
 		
 		$this->Html->scriptStart(array('inline' => false, 'block' => 'script-async'));
 		?>
-		solution_switcher(null, [function(ins) {
+		scripts.load_solution(null, null, null, null, [function(ins) {
 			if (typeof DISQUS !== "undefined") {
 			
 				DISQUS.reset({
@@ -79,4 +79,4 @@
 	<p class="status_<?php echo($solution['state']['state_id']); ?>"><?php echo($solution['state']['name']); ?></p>
 	<p class="revised">Last edit by <?php echo($solution['revisionist']); ?> on <?php echo($solution['revised']); ?></p>
 </div>
-<div id="disqus_thread"></div>
+<?php if(!$is_ajax) { ?><div id="disqus_thread"></div><?php } ?>

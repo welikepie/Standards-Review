@@ -1,18 +1,41 @@
 <?php
 
-	class IssuesController extends AppController {
+	/* ISSUES
+	 * This controller manages the issues discussed in the system.
+	 * Retrieving the issues from the database, listing them, adding
+	 * new ones and editing existing ones happens here.
+	 */
 
-		public $uses = array('User', 'Issue', 'IssueRevision');
+	class IssuesController extends AppController {
+	
+		const PAGINATION = 1;
+
+		public $uses = array('User', 'Issue', 'IssueRevision', 'Solution', 'State');
+		public $components = array('RequestHandler');
 		public $helpers = array("Html", "Form");
 		
 		public function index() {
 		
-			/* This method is used to obtain N latest issues in a simple
-			 * description format, to be displayed several per page.
+			/* This method is used to provide the initial view at
+			 * the latest issues entered into the system. Pagination
+			 * is included as well, stacking at 30 results per page.
 			 */
 			
-			// Obtain issues from the database
-			$this->Issue->Behaviors->attach('Containable');
+			// Obtain the current page and the total number of
+			// pages (correct current page if out of range).
+			$page =
+			( isset($_GET['page']) ?
+			  ( intval($_GET['page'], 10) >= 1 ?
+			    intval($_GET['page'], 10) :
+			    1 ) :
+			  1 );
+			$totalPages = $this->Issue->find('count', array('recursive' => -1));
+			$totalPages = ceil($totalPages / self::PAGINATION);
+			if ($page > $totalPages) { $page = $totalPages; }
+			
+			// Get the basic issue details according to
+			// pagination setup. Only include the associations
+			// needed for basic display.
 			$data = $this->Issue->find('all', array(
 				'order' => 'Issue.created DESC',
 				'contain' => array(
@@ -21,10 +44,13 @@
 						'Revisionist',
 						'State'
 					)
-				)
+				),
+				'limit' => self::PAGINATION,
+				'page' => $page
 			));
 			
-			// Process the data for display
+			// Process the data for display in page
+			// (flatten the tree, parse values and so on)
 			$result = array();
 			foreach ($data as &$issue) {
 			
@@ -48,23 +74,25 @@
 			
 			} unset($issue);
 			
-			// Set the data to be used in the response
-			if (isset($this->params['requested'])) {
-				return array('issues' => $result);
-			} else {
-				$this->set('issues', $result);
-			}
+			// Following bits are passed to the view:
+			// - list of issues to render
+			// - paging data - for link generation
+			// - whether the request is AJAX (we only want to return actual issues in AJAX request)
+			$this->set('issues', $result);
+			$this->set('pages', array('current' => $page, 'total' => $totalPages));
+			$this->set('is_ajax', $this->RequestHandler->isAjax());
 		
 		}
 		
 		public function view($id) {
 		
-			/* This method is used to obtain the full details of
-			 * one selected issue, along with excerpts of the suggested solutions.
+			/* This method is used to obtain the full details of one selected issue,
+			 * along with excerpts of the suggested solutions. Two distinct sets of
+			 * data are being pulled - the full details of specified issue and the
+			 * paginated collection of solutions.
 			 */
 			
-			// Obtain specified issue from the database
-			$this->Issue->Behaviors->attach('Containable');
+			// Pull the data from the database
 			$data = $this->Issue->find('first', array(
 				'conditions' => 'Issue.issue_id = ' . intval($id, 10),
 				'contain' => array(
@@ -77,14 +105,14 @@
 					'Solution' => array(
 						'Author',
 						'SolutionRevision' => array(
-							'State',
-							'Revisionist'
+							'Revisionist',
+							'State'
 						)
 					)
 				)
 			));
 			
-			// Process the issue data for display
+			// Process the issue data for correct display
 			$issue = array(
 				'issue_id' => intval($data['Issue']['issue_id'], 10),
 				'created' => $data['Issue']['created'],
@@ -103,6 +131,11 @@
 					'normal' => array()
 				)
 			);
+
+			// Process the references.
+			// The normal, custom references are put in one array, whereas
+			// any special references (demos and so), having the name bracketed
+			// by underscores, are put in another array.
 			foreach($data['IssueRevision'][0]['IssueReference'] as &$ref) {
 				$match = array();
 				if (preg_match('/^__(\w+)__$/', $ref['name'], $match)) {
@@ -111,8 +144,36 @@
 					$issue['references']['normal'][$ref['name']] = $ref['reference'];
 				}
 			} unset($ref); unset($match);
+
+			// Obtain the current page and the total number of
+			// pages (correct current page if out of range).
+			/*$page =
+			( isset($_GET['page']) ?
+			  ( intval($_GET['page'], 10) >= 1 ?
+			    intval($_GET['page'], 10) :
+			    1 ) :
+			  1 );
+			$totalPages = $this->Solution->find('count', array('conditions' => 'Solution.issue_id = ' . intval($id, 10), 'recursive' => -1));
+			$totalPages = ceil($totalPages / self::PAGINATION);
+			if ($page > $totalPages) { $page = $totalPages; }*/
 			
-			// Process the solutions' bits
+			// Get the basic solution details as the pagination
+			// setup goes. Only the basic details are obtained,
+			// the full setup is to be linked to.
+			/*$data = $this->Solution->find('all', array(
+				'order' => 'Solution.created DESC',
+				'contain' => array(
+					'Author',
+					'SolutionRevision' => array(
+						'Revisionist',
+						'State'
+					)
+				),
+				'limit' => self::PAGINATION,
+				'page' => $page
+			));*/
+			
+			// Process the solutions' data for display
 			$solutions = array();
 			foreach($data['Solution'] as &$sol) {
 				$solutions[] = array(
@@ -135,15 +196,41 @@
 				);
 			}
 			
-			/*if (isset($this->params['requested'])) {
-				return array(
-					'issue' => $issue,
-					'solutions' => $solutions
+			// Following bits are passed to the view:
+			// - full description of requested issue (only if non-AJAX)
+			// - solutions paged data
+			// - paging data - for link generation
+			// - whether the request is AJAX
+			$this->set('issue', $issue);
+			$this->set('solutions', $solutions);
+		
+		}
+		
+		public function add() {
+		
+			if (!$this->Session->check('loggedIn')) { $this->redirect($this->referer()); }
+		
+			if ($this->request->is('post')) {
+			
+				$saved = $this->Issue->saveAssociated(
+					$this->request->data,
+					array(
+						'atomic' => true,
+						'deep' => true,
+						'validate' => 'only'
+					)
 				);
-			} else {*/
-				$this->set('issue', $issue);
-				$this->set('solutions', $solutions);
-			/*}*/
+				if ($saved) { $this->redirect("/issues"); }
+				else { die(); }
+			
+			} else {
+			
+				$this->set('states', $this->State->find('list', array(
+					'fields' => array('State.state_id', 'State.name'),
+					'recursive' => -1
+				)));
+			
+			}
 		
 		}
 	

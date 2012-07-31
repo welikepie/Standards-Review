@@ -71,7 +71,7 @@ class PaginatorComponent extends Component {
 		'page' => 1,
 		'limit' => 20,
 		'maxLimit' => 100,
-		'paramType' => 'named'
+		'paramType' => 'querystring'
 	);
 
 /**

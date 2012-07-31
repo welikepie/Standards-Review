@@ -2,7 +2,7 @@
 
 	class SolutionsController extends AppController {
 	
-		public $uses = array('Solution', 'SolutionRevision', 'SolutionReference', 'State', 'User');
+		public $uses = array('Solution', 'SolutionRevision', 'SolutionReference', 'State', 'User', 'Issue');
 		public $components = array('RequestHandler');
 		public $helpers = array('Html', 'Form');
 	
@@ -60,6 +60,41 @@
 			$this->set('issue_id', intval($data['Solution']['issue_id'], 10));
 			$this->set('is_ajax', $this->RequestHandler->isAjax());
 			$this->set('solution', $solution);
+		
+		}
+		
+		public function add($issue_id) {
+		
+			if (!$this->Session->check('loggedIn')) { $this->redirect($this->referer()); }
+			
+			$issue = $this->Issue->find('first', array(
+				'conditions' => 'Issue.issue_id = ' . $issue_id,
+				'recursive' => -1
+			));
+			if (!$issue) { $this->redirect("/issues"); }
+			
+			if ($this->request->is('post')) {
+			
+				$saved = $this->Solution->saveAssociated(
+					$this->request->data,
+					array(
+						'atomic' => true,
+						'deep' => true,
+						'validate' => 'only'
+					)
+				);
+				if ($saved) { $this->redirect("/issues/" . $issue_id . "/solutions/" . $this->Solution->id); }
+				else { die(); }
+			
+			} else {
+			
+				$this->set('issue_id', $issue_id);
+				$this->set('states', $this->State->find('list', array(
+					'fields' => array('State.state_id', 'State.name'),
+					'recursive' => -1
+				)));
+			
+			}
 		
 		}
 	
